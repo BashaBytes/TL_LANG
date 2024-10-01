@@ -1,0 +1,21 @@
+# Declare variables
+petu x = 5
+petu y = 10
+
+# Print the values of x and y
+cheppu "Initial values:"
+cheppu "x = "
+cheppu x
+cheppu "y = "
+cheppu y
+
+# Conditional checks with IF, ELIF, ELSE
+aithe x < y
+    cheppu "x is less than y"
+ledha
+    cheppu "x is greater than y"
+endif
+
+
+
+cheppu "Script complete!"
