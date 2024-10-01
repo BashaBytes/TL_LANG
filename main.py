@@ -5,12 +5,10 @@ import time  # For implementing sleep
 KEYWORDS = {
     "petu": "SET",        # Variable Declaration
     "aithe": "IF",        # If
-    "lekunte": "ELSE",    # Else
+    "lekunte": "ELIF",    #Elif
+    "ledha": "ELSE",    # Else
     "cheppu": "PRINT",    # Print
     "looplo": "LOOP",     # Loop
-    "tuples": "TUPLE",    # Tuple
-    "lists": "LIST",      # List
-    "dict": "DICT",       # Dictionary
     "sleep": "SLEEP",     # Sleep
     "+": "PLUS",         # Addition
     "-": "MINUS",         # Subtraction
@@ -92,12 +90,6 @@ def evaluate_expression(tokens, i):
             return int(token_value)
         elif token_type == "STRING":
             return token_value.strip('"')
-        elif token_type == "LIST":
-            return eval(token_value)  # Convert list string to Python list
-        elif token_type == "TUPLE":
-            return eval(token_value)  # Convert tuple string to Python tuple
-        elif token_type == "DICT":
-            return eval(token_value)  # Convert dictionary string to Python dict
         elif token_type == "VAR":
             if token_value in variables:
                 return variables[token_value]
@@ -165,30 +157,36 @@ def interpret(tokens):
             var_value = evaluate_expression(tokens, i)
             print(var_value)
 
-        elif token_type == "SLEEP":
-            i += 1
-            sleep_time = evaluate_expression(tokens, i)
-            time.sleep(sleep_time)  # Sleep for a specified time
-
         elif token_type == "IF":
             i += 1
             condition = evaluate_expression(tokens, i)
             if condition:
-                interpret(tokens[i:])  # Execute true block
+                i += 1  # Move to the next token inside the if block
+                while i < len(tokens) and tokens[i][0] not in ["ELSE", "ENDIF"]:
+                    token_type, token_value = tokens[i]
+                    if token_type == "PRINT":
+                        i += 1
+                        var_value = evaluate_expression(tokens, i)
+                        print(var_value)
+                    else:
+                        i += 1
+                # Skip the ELSE block if condition was true
+                while i < len(tokens) and tokens[i][0] != "ENDIF":
+                    i += 1
             else:
-                # Skip ahead to ELSE if present
-                while i < len(tokens) and tokens[i][0] != "ELSE":
+                # Skip to ELSE or ENDIF if condition is false
+                while i < len(tokens) and tokens[i][0] not in ["ELSE", "ENDIF"]:
                     i += 1
                 if i < len(tokens) and tokens[i][0] == "ELSE":
-                    i += 1
-                    interpret(tokens[i:])  # Execute false block
-
-        elif token_type == "LOOP":
-            i += 1
-            iterations = evaluate_expression(tokens, i)
-            loop_start = i
-            for _ in range(iterations):
-                interpret(tokens[loop_start:])
+                    i += 1  # Move past ELSE
+                    while i < len(tokens) and tokens[i][0] != "ENDIF":
+                        token_type, token_value = tokens[i]
+                        if token_type == "PRINT":
+                            i += 1
+                            var_value = evaluate_expression(tokens, i)
+                            print(var_value)
+                        else:
+                            i += 1
 
         i += 1
 
