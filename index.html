@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TL_LANG Interpreter</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #5a67d8;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 90%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        button {
+            background-color: #5a67d8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #4c51bf;
+        }
+        pre {
+            background-color: #e2e8f0;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e0;
+            overflow-x: auto;
+            width: 90%;
+            max-width: 600px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body onload="brython()">
+    <h1>TL_LANG Online Interpreter</h1>
+    <textarea id="code" placeholder="Enter your TL_LANG code here..."></textarea><br>
+    <button id="run-button">Run Code</button>
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+
+    <script type="text/python">
+        from browser import document
+
+        # Define keywords for the Telugu-based programming language
+        KEYWORDS = {
+            "petu": "SET",        # Variable Declaration
+            "aithe": "IF",        # If
+            "lekunte": "ELIF",    # Elif
+            "ledha": "ELSE",      # Else
+            "cheppu": "PRINT",    # Print
+            "looplo": "LOOP",     # Loop
+            "sleep": "SLEEP",     # Sleep
+            "+": "PLUS",          # Addition
+            "-": "MINUS",         # Subtraction
+            "*": "TIMES",         # Multiplication
+            "/": "DIVIDE",        # Division
+            ">": "GT",            # Greater than
+            "<": "LT",            # Less than
+            ">=": "GTE",          # Greater than or equal
+            "<=": "LTE",          # Less than or equal
+            "==": "EQ",           # Equal to
+            "!=": "NEQ",          # Not equal
+        }
+
+        # Define token patterns for variables, numbers, strings, lists, tuples, and symbols
+        TOKEN_TYPES = ["NUMBER", "STRING", "VAR", "ASSIGN", "PLUS", "MINUS", "TIMES", "DIVIDE", "GT", "LT", "GTE", "LTE", "EQ", "NEQ", "LPAREN", "RPAREN", "COMMENT", "WS"]
+        TOKEN_MAP = {
+            "+": "PLUS",
+            "-": "MINUS",
+            "*": "TIMES",
+            "/": "DIVIDE",
+            ">": "GT",
+            "<": "LT",
+            ">=": "GTE",
+            "<=": "LTE",
+            "==": "EQ",
+            "!=": "NEQ",
+            "=": "ASSIGN",
+            "(": "LPAREN",
+            ")": "RPAREN"
+        }
+
+        # Lexer function
+        def lex(code):
+            tokens = []
+            i = 0
+            while i < len(code):
+                char = code[i]
+
+                if char.isspace():
+                    i += 1
+                    continue
+
+                # Number
+                if char.isdigit():
+                    num = ""
+                    while i < len(code) and code[i].isdigit():
+                        num += code[i]
+                        i += 1
+                    tokens.append(("NUMBER", num))
+                    continue
+
+                # Variable or Keyword
+                if char.isalpha() or char == "_":
+                    start = i
+                    while i < len(code) and (code[i].isalnum() or code[i] == "_"):
+                        i += 1
+                    word = code[start:i]
+                    token_type = KEYWORDS.get(word, "VAR")
+                    tokens.append((token_type, word))
+                    continue
+
+                # String
+                if char == '"':
+                    i += 1
+                    string_value = ""
+                    while i < len(code) and code[i] != '"':
+                        string_value += code[i]
+                        i += 1
+                    i += 1  # Skip the closing quote
+                    tokens.append(("STRING", string_value))
+                    continue
+
+                # Symbols
+                if char in TOKEN_MAP:
+                    tokens.append((TOKEN_MAP[char], char))
+                    i += 1
+                    continue
+
+                # Comment
+                if code.startswith("#", i):
+                    while i < len(code) and code[i] != "\n":
+                        i += 1
+                    continue
+
+                raise SyntaxError(f"Unknown character: {char}")
+
+            return tokens
+
+        # Define the environment (variables) to hold the state
+        variables = {}
+
+        # Helper function for arithmetic and print operations
+        def evaluate_expression(tokens, i):
+            def parse_term():
+                nonlocal i
+                token_type, token_value = tokens[i]
+                i += 1
+
+                if token_type == "NUMBER":
+                    return int(token_value)
+                elif token_type == "STRING":
+                    return token_value.strip('"')
+                elif token_type == "VAR":
+                    if token_value in variables:
+                        return variables[token_value]
+                    else:
+                        raise NameError(f"Undefined variable: {token_value}")
+
+            result = parse_term()
+
+            while i < len(tokens):
+                token_type, token_value = tokens[i]
+
+                if token_type == "PLUS":
+                    i += 1
+                    result += parse_term()
+                elif token_type == "MINUS":
+                    i += 1
+                    result -= parse_term()
+                elif token_type == "TIMES":
+                    i += 1
+                    result *= parse_term()
+                elif token_type == "DIVIDE":
+                    i += 1
+                    result /= parse_term()  # Use standard division
+                else:
+                    break
+
+            return result
+
+        # Simple interpreter with IF, ELSE support
+        def interpret(tokens):
+            i = 0
+            output = []
+            while i < len(tokens):
+                token_type, token_value = tokens[i]
+
+                if token_type == "SET":
+                    i += 1
+                    var_name = tokens[i][1]
+                    i += 1
+                    if tokens[i][0] == "ASSIGN":
+                        i += 1
+                        var_value = evaluate_expression(tokens, i)
+                        variables[var_name] = var_value
+
+                elif token_type == "PRINT":
+                    i += 1
+                    var_value = evaluate_expression(tokens, i)
+                    output.append(str(var_value))
+
+                i += 1
+
+            return output
+
+        # Function to run code from the textarea
+        def run_code(event):
+            code = document.getElementById("code").value
+            try:
+                tokens = lex(code)
+                result = interpret(tokens)
+                document.getElementById("output").textContent = "\n".join(result)
+            except Exception as e:
+                document.getElementById("output").textContent = str(e)
+
+        # Bind the run_code function to the button click event
+        document["run-button"].bind("click", run_code)
+
+    </script>
+</body>
+</html>
