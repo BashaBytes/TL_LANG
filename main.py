@@ -5,7 +5,6 @@ import time  # For implementing sleep
 KEYWORDS = {
     "petu": "SET",        # Variable Declaration
     "aithe": "IF",        # If
-    "lekunte": "ELIF",    #Elif
     "ledha": "ELSE",    # Else
     "cheppu": "PRINT",    # Print
     "looplo": "LOOP",     # Loop
