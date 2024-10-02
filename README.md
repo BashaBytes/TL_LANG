@@ -61,5 +61,4 @@ lekunte x == 5
     chupinchu "x is 5"
 ledha
     chupinchu "x is less than 5"
-
 ```
