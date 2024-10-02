@@ -45,9 +45,13 @@ chupinchu a + b
 
 <h3 align="center">Conditionals</h3>
 <p>This language uses :-
+  <br>
   if ---> aithe
+  <br>
   else -----> lekunthe
+  <br>
   elif/else if ---> ledha
+  <br>
 </p>
 ```
 anuko x = 10
