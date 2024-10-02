@@ -12,6 +12,7 @@
 git clone https://github.com/BashaBytes/TL_LANG.git
 cd TL_LANG
 python3 main.py #for running the example.tll file just edit the example.tll file as required
+python3 gui.py #for gui version of the interpreter
 ```
 
 You can also try out your code on <a href="https://bashabytes.github.io/TL_LANG/">Online Intrepreter of TL_LANG</a></h4>
