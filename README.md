@@ -53,12 +53,8 @@ chupinchu a + b
   elif/else if ---> ledha
   <br>
 </p>
+
 ```
-anuko x = 10
-aithe x > 5
-    chupinchu "x is greater than 5"
-lekunte x == 5
-    chupinchu "x is 5"
-ledha
-    chupinchu "x is less than 5"
+anuko a = 5
+chupinchu a
 ```
