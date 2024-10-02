@@ -4,22 +4,12 @@ import time  # For implementing sleep
 # Define keywords for the Telugu-based programming language
 KEYWORDS = {
     "anuko": "SET",        # Variable Declaration
-    "aithe": "IF",         # If
-    "lekunte": "ELIF",     # Elif
-    "ledha": "ELSE",       # Else
     "chupinchu": "PRINT",  # Print
-    "looplo": "LOOP",      # Loop
     "sleep": "SLEEP",      # Sleep
     "+": "PLUS",           # Addition
     "-": "MINUS",          # Subtraction
     "*": "TIMES",          # Multiplication
     "/": "DIVIDE",         # Division
-    ">": "GT",             # Greater than
-    "<": "LT",             # Less than
-    ">=": "GTE",           # Greater than or equal
-    "<=": "LTE",           # Less than or equal
-    "==": "EQ",            # Equal to
-    "!=": "NEQ",           # Not equal to
 }
 
 # Define token patterns
@@ -32,12 +22,6 @@ TOKEN_PATTERNS = [
     ("MINUS", r"-"),
     ("TIMES", r"\*"),
     ("DIVIDE", r"/"),
-    ("GT", r">"),
-    ("LT", r"<"),
-    ("GTE", r">="),
-    ("LTE", r"<="),
-    ("EQ", r"=="),
-    ("NEQ", r"!="),
     ("LPAREN", r"\("),
     ("RPAREN", r"\)"),
     ("COMMENT", r"#.*"),   # Comments
@@ -92,7 +76,7 @@ def evaluate_expression(tokens, i):
 
     while i < len(tokens):
         token_type, token_value = tokens[i]
-        if token_type in ["PLUS", "MINUS", "TIMES", "DIVIDE", "GT", "LT", "GTE", "LTE", "EQ", "NEQ"]:
+        if token_type in ["PLUS", "MINUS", "TIMES", "DIVIDE"]:
             i += 1
             if token_type == "PLUS":
                 result += parse_term()
@@ -102,27 +86,14 @@ def evaluate_expression(tokens, i):
                 result *= parse_term()
             elif token_type == "DIVIDE":
                 result //= parse_term()  # Integer division
-            elif token_type == "GT":
-                result = result > parse_term()
-            elif token_type == "LT":
-                result = result < parse_term()
-            elif token_type == "GTE":
-                result = result >= parse_term()
-            elif token_type == "LTE":
-                result = result <= parse_term()
-            elif token_type == "EQ":
-                result = result == parse_term()
-            elif token_type == "NEQ":
-                result = result != parse_term()
         else:
             break
 
     return result
 
-# Simple interpreter with proper IF, ELIF, ELSE handling
+# Simple interpreter without conditions
 def interpret(tokens):
     i = 0
-    skip_block = False  # To skip blocks after a condition is met
 
     while i < len(tokens):
         token_type, token_value = tokens[i]
@@ -134,49 +105,13 @@ def interpret(tokens):
             i += 2  # Skip variable and assignment
             var_value = evaluate_expression(tokens, i)
             variables[var_name] = var_value
-            skip_block = False
 
         elif token_type == "PRINT":
             i += 1
             var_value = evaluate_expression(tokens, i)
             print(var_value)
-            skip_block = False
 
-        elif token_type == "IF":
-            i += 1
-            condition = evaluate_expression(tokens, i)
-            if condition:
-                skip_block = False
-            else:
-                skip_block = True
-                # Skip the block until ELIF or ELSE
-                while i < len(tokens) and tokens[i][0] not in ["ELIF", "ELSE", "ENDIF"]:
-                    i += 1
-
-        elif token_type == "ELIF":
-            if skip_block:
-                i += 1
-                condition = evaluate_expression(tokens, i)
-                if condition:
-                    skip_block = False
-                else:
-                    # Skip the block if ELIF is also false
-                    while i < len(tokens) and tokens[i][0] not in ["ELSE", "ENDIF"]:
-                        i += 1
-            else:
-                # Skip the block if previous IF/ELIF was true
-                while i < len(tokens) and tokens[i][0] != "ENDIF":
-                    i += 1
-
-        elif token_type == "ELSE":
-            if skip_block:
-                skip_block = False  # Execute the ELSE block
-            else:
-                # Skip ELSE block if IF or ELIF was true
-                while i < len(tokens) and tokens[i][0] != "ENDIF":
-                    i += 1
-
-        i += 1
+        i += 1  # Move to the next token
 
 # Function to execute code from a .tll file
 def execute_file(filename):
@@ -185,4 +120,5 @@ def execute_file(filename):
         tokens = lex(code)
         interpret(tokens)
 
+# Execute the file
 execute_file('example.tll')
