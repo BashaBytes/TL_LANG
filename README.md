@@ -44,24 +44,11 @@ chupinchu a + b
 
 
 
-<h3 align="center">Conditionals</h3>
-<p>This language uses :-
-  <br>
-  if ---> aithe
-  <br>
-  else -----> lekunthe
-  <br>
-  elif/else if ---> ledha
-  <br>
-</p>
+<h3 align="center">Loops</h3>
+
 
 ```
-anuko x = 10
-aithe x > 5
-    chupinchu "x is greater than 5"
-lekunte x == 5
-    chupinchu "x is 5"
-ledha
-    chupinchu "x is less than 5"
+looplo 5
+chupinchu "namaste"
 
 ```
