@@ -66,11 +66,9 @@
         # Define keywords for the Telugu-based programming language
         KEYWORDS = {
             "anuko": "SET",        # Variable Declaration
-            "aithe": "IF",        # If
-            "lekunte": "ELIF",    # Elif
-            "ledha": "ELSE",      # Else
             "chupinchu": "PRINT",    # Print
             "looplo": "LOOP",     # Loop
+            "endloop": "ENDLOOP", # End of Loop
             "sleep": "SLEEP",     # Sleep
             "+": "PLUS",          # Addition
             "-": "MINUS",         # Subtraction
@@ -84,7 +82,7 @@
             "!=": "NEQ",          # Not equal
         }
 
-        # Define token patterns for variables, numbers, strings, lists, tuples, and symbols
+        # Define token patterns
         TOKEN_TYPES = ["NUMBER", "STRING", "VAR", "ASSIGN", "PLUS", "MINUS", "TIMES", "DIVIDE", "GT", "LT", "GTE", "LTE", "EQ", "NEQ", "LPAREN", "RPAREN", "COMMENT", "WS"]
         TOKEN_MAP = {
             "+": "PLUS",
@@ -159,16 +157,15 @@
 
             return tokens
 
-        # Define the environment (variables) to hold the state
+        # Define environment (variables) to hold the state
         variables = {}
 
-        # Helper function for arithmetic and print operations
+        # Helper function for evaluating expressions
         def evaluate_expression(tokens, i):
             def parse_term():
                 nonlocal i
                 token_type, token_value = tokens[i]
                 i += 1
-
                 if token_type == "NUMBER":
                     return int(token_value)
                 elif token_type == "STRING":
@@ -201,7 +198,7 @@
 
             return result
 
-        # Simple interpreter with IF, ELSE support
+        # Simple interpreter with loop support
         def interpret(tokens):
             i = 0
             output = []
@@ -221,6 +218,21 @@
                     i += 1
                     var_value = evaluate_expression(tokens, i)
                     output.append(str(var_value))
+
+                elif token_type == "LOOP":
+                    i += 1
+                    loop_var = tokens[i][1]
+                    i += 1
+                    loop_count = variables[loop_var] if loop_var in variables else 0
+                    for _ in range(loop_count):
+                        while i < len(tokens) and tokens[i][0] != "ENDLOOP":
+                            token_type, token_value = tokens[i]
+                            if token_type == "PRINT":
+                                i += 1
+                                var_value = evaluate_expression(tokens, i)
+                                output.append(str(var_value))
+                            i += 1
+                    continue  # Skip to the end of loop
 
                 i += 1
 
