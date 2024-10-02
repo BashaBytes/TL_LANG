@@ -3,10 +3,11 @@ import time  # For implementing sleep
 
 # Define keywords for the Telugu-based programming language
 KEYWORDS = {
-    "petu": "SET",        # Variable Declaration
+    "anuko": "SET",        # Variable Declaration
     "aithe": "IF",        # If
+    "lekunte": "ELIF",    #Elif
     "ledha": "ELSE",    # Else
-    "cheppu": "PRINT",    # Print
+    "chupinchu": "PRINT",    # Print
     "looplo": "LOOP",     # Loop
     "sleep": "SLEEP",     # Sleep
     "+": "PLUS",         # Addition
