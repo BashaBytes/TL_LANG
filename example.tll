@@ -1,21 +1,3 @@
-# Declare variables
-petu x = 5
-petu y = 10
-
-# Print the values of x and y
-chupinchu "Initial values:"
-chupinchu "x = "
-chupinchu x
-chupinchu "y = "
-chupinchu y
-
-# Conditional checks with IF, ELIF, ELSE
-aithe x < y
-    chupinchu "x is less than y"
-ledha
-    chupinchu "x is greater than y"
-endif
-
-
-
-chupinchu "Script complete!"
+anuko a = 30
+anuko b = 50
+chupinchu a + b
