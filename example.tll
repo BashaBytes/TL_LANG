@@ -3,19 +3,19 @@ petu x = 5
 petu y = 10
 
 # Print the values of x and y
-cheppu "Initial values:"
-cheppu "x = "
-cheppu x
-cheppu "y = "
-cheppu y
+chupinchu "Initial values:"
+chupinchu "x = "
+chupinchu x
+chupinchu "y = "
+chupinchu y
 
 # Conditional checks with IF, ELIF, ELSE
 aithe x < y
-    cheppu "x is less than y"
+    chupinchu "x is less than y"
 ledha
-    cheppu "x is greater than y"
+    chupinchu "x is greater than y"
 endif
 
 
 
-cheppu "Script complete!"
+chupinchu "Script complete!"
